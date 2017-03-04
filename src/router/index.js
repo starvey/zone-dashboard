@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import ProjectList from '@/components/ProjectList'
+import Project from '@/components/Project'
 import Login from '@/components/Login'
 import store from '@/store'
 
@@ -15,10 +16,19 @@ const router = new Router({
       meta: { requiresAuth: false }
     },
     {
-      path: '/project-list/',
-      name: 'Project',
+      path: '/projects',
+      name: 'Projects',
       component: ProjectList,
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/projects/:projectId',
+      name: 'Project',
+      component: Project,
+      meta: { requiresAuth: true },
+      props: (route) => {
+        return {...route.params, expanded: true}
+      }
     }
   ]
 })

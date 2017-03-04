@@ -1,6 +1,8 @@
 <template>
   <div>
-    <h2>{{project.name}}</h2>
+    <router-link :to="{name: 'Project', params: {projectId: projectId}}">
+      <h2>{{project.name}}</h2>
+    </router-link>
     <h3>{{project.description}}</h3>
     <h4>{{ milestones.length }} open sprints</h4>
     <ul>
@@ -12,8 +14,11 @@
 <script>
 export default {
   name: 'project-list',
-  props: ['project'],
+  props: ['projectId', 'expanded'],
   computed: {
+    project () {
+      return this.$store.state.projects[this.projectId]
+    },
     milestones () {
       const milestones = []
       Object.keys(this.$store.state.milestones).forEach((key) => {

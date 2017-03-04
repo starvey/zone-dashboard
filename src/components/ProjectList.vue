@@ -1,6 +1,6 @@
 <template>
   <div class="project-list">
-    <project class="project-list__project" v-for="(project, id) in projects" :key="id" :project="project"/>
+    <project class="project-list__project" v-for="(project, id) in projects" :key="id" :project-id="id"/>
   </div>
 </template>
 

@@ -33,7 +33,7 @@ export default {
       this.$store.dispatch('login', {
         username, password
       }).then(() => {
-        this.$router.replace('/project-list')
+        this.$router.replace({name: 'Projects'})
       }).catch(() => {
         this.loading = false
         alert('an error occured')
