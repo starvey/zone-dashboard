@@ -6,7 +6,7 @@
     <h3>{{project.description}}</h3>
     <h4>{{ milestones.length }} open sprints</h4>
     <ul>
-      <li v-for="milestone in milestones">{{ milestone.name }}</li>
+      <li v-for="milestone in milestones">{{ milestone.name }} ({{milestone.closed_points || 0}} / {{milestone.total_points || 0}})</li>
     </ul>
   </div>
 </template>
