@@ -22,7 +22,7 @@ export const actions = {
   getData ({dispatch}) {
     return dispatch('getProjects')
         .then(() => {
-          dispatch('getOpenMilestones')
+          return dispatch('getOpenMilestones')
         })
   },
 
@@ -83,7 +83,7 @@ export const actions = {
       commit('setUser', json)
     })
     .then(() => {
-      dispatch('getData')
+      return dispatch('getData')
     })
   }
 }

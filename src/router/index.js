@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import StoryList from '@/components/StoryList'
+import ProjectList from '@/components/ProjectList'
 import Login from '@/components/Login'
 import store from '@/store'
 
@@ -11,25 +11,23 @@ const router = new Router({
     {
       path: '/',
       name: 'Login',
-      component: Login
+      component: Login,
+      meta: { requiresAuth: false }
     },
     {
       path: '/project-list/',
       name: 'Project',
-      component: StoryList
-    },
-    {
-      path: '/project-list/:projectId',
-      name: 'StoryList',
-      component: StoryList
+      component: ProjectList,
+      meta: { requiresAuth: true }
     }
   ]
 })
 
 router.beforeEach((to, from, next) => {
-  console.log(this)
-  console.log(store.state.user)
-  next()
+  if (to.meta.requiresAuth && !store.state.user) {
+    return next('/')
+  }
+  return next()
 })
 
 export default router
