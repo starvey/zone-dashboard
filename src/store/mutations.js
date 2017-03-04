@@ -15,6 +15,18 @@ export const mutations = {
       agg[current.id] = current
       return agg
     }, {...state.milestones})
+  },
+  setStoryStatuses (state, statuses) {
+    state.storyStatuses = statuses.reduce((agg, status) => {
+      agg[status.id] = status
+      return agg
+    }, {...state.storyStatuses})
+  },
+  setTaskStatuses (state, statuses) {
+    state.taskStatuses = statuses.reduce((agg, status) => {
+      agg[status.id] = status
+      return agg
+    }, {...state.taskStatuses})
   }
 }
 
@@ -23,6 +35,12 @@ export const actions = {
     return dispatch('getProjects')
         .then(() => {
           return dispatch('getOpenMilestones')
+        })
+        .then(() => {
+          return dispatch('getStoryStatuses')
+        })
+        .then(() => {
+          return dispatch('getTaskStatuses')
         })
   },
 
@@ -61,6 +79,44 @@ export const actions = {
     return Promise.all(promises)
   },
 
+  getStoryStatuses ({commit, state}) {
+    const promises = Object.keys(state.projects).map((projectId) => {
+      return fetch(`${API_URL}/userstory-statuses?project=${projectId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${state.user.auth_token}`
+        }
+      }).then((response) => {
+        if (response.status >= 400) {
+          return Promise.reject(response)
+        }
+        return response.json()
+      }).then((json) => {
+        commit('setStoryStatuses', json)
+      })
+    })
+    return Promise.all(promises)
+  },
+
+  getTaskStatuses ({commit, state}) {
+    const promises = Object.keys(state.projects).map((projectId) => {
+      return fetch(`${API_URL}/task-statuses?project=${projectId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${state.user.auth_token}`
+        }
+      }).then((response) => {
+        if (response.status >= 400) {
+          return Promise.reject(response)
+        }
+        return response.json()
+      }).then((json) => {
+        commit('setTaskStatuses', json)
+      })
+    })
+    return Promise.all(promises)
+  },
+
   login ({commit, dispatch}, {username, password}) {
     return fetch(`${API_URL}/auth`, {
       method: 'POST',
@@ -91,5 +147,7 @@ export const actions = {
 export const state = {
   user: null,
   projects: {},
-  milestones: {}
+  milestones: {},
+  storyStatuses: {},
+  taskStatuses: {}
 }

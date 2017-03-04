@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <form v-if="!loading">
+    <form v-if="!loading" v-on:keyup.enter="login">
       <label class="login__label">Username / email</label>
       <input class="login__input" name="email" type="text" v-model="username" />
       <label class="login__label">Password</label>
