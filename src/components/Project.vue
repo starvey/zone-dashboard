@@ -6,14 +6,18 @@
     <h3>{{project.description}}</h3>
     <h4>{{ milestones.length }} open sprints</h4>
     <ul>
-      <li v-for="milestone in milestones">{{ milestone.name }} ({{milestone.closed_points || 0}} / {{milestone.total_points || 0}})</li>
+      <li v-for="milestone in milestones">
+        <router-link :to="{name: 'Milestone', params: {projectId: projectId, milestoneId: milestone.id}}"> 
+          {{ milestone.name }} ({{milestone.closed_points || 0}} / {{milestone.total_points || 0}})
+        </router-link>
+      </li>
     </ul>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'project-list',
+  name: 'project',
   props: ['projectId', 'expanded'],
   computed: {
     project () {
