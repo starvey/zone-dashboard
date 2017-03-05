@@ -16,6 +16,12 @@ export const mutations = {
       return agg
     }, {...state.milestones})
   },
+  setTasks (state, tasks) {
+    state.tasks = tasks.reduce((agg, current) => {
+      agg[current.id] = current
+      return agg
+    }, {...state.tasks})
+  },
   setStoryStatuses (state, statuses) {
     state.storyStatuses = statuses.reduce((agg, status) => {
       agg[status.id] = status
@@ -35,6 +41,9 @@ export const actions = {
     return dispatch('getProjects')
         .then(() => {
           return dispatch('getOpenMilestones')
+        })
+        .then(() => {
+          return dispatch('getTasksForProjects')
         })
         .then(() => {
           return dispatch('getStoryStatuses')
@@ -74,6 +83,25 @@ export const actions = {
         return response.json()
       }).then((json) => {
         commit('setMilestones', json)
+      })
+    })
+    return Promise.all(promises)
+  },
+
+  getTasksForProjects ({commit, state}) {
+    const promises = Object.keys(state.projects).map((projectId) => {
+      return fetch(`${API_URL}/tasks?project=${projectId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${state.user.auth_token}`
+        }
+      }).then((response) => {
+        if (response.status >= 400) {
+          return Promise.reject(response)
+        }
+        return response.json()
+      }).then((json) => {
+        commit('setTasks', json)
       })
     })
     return Promise.all(promises)
@@ -149,5 +177,6 @@ export const state = {
   projects: {},
   milestones: {},
   storyStatuses: {},
-  taskStatuses: {}
+  taskStatuses: {},
+  tasks: {}
 }
