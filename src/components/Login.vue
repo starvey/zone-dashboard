@@ -2,10 +2,10 @@
   <div class="login">
     <form v-if="!loading" v-on:keyup.enter="login">
       <label class="login__label">Username / email</label>
-      <input class="login__input" name="email" type="text" v-model="username" />
+      <input class="login__input form-control" name="email" type="text" v-model="username" />
       <label class="login__label">Password</label>
-      <input class="login__input" name="password" type="password" v-model="password" />
-      <button class="login__submit" type="button" v-on:click="login">Login</button>
+      <input class="login__input form-control" name="password" type="password" v-model="password" />
+      <button class="login__submit btn btn-primary" type="button" v-on:click="login">Login</button>
     </form>
     <ring-loader class="login__spinner" v-if="loading" />
   </div>
@@ -48,6 +48,7 @@ export default {
   .login {
     width: 300px;
     margin: auto;
+    margin-top: 60px;
   }
 
   .login__label {
