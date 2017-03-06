@@ -145,6 +145,25 @@ export const actions = {
     return Promise.all(promises)
   },
 
+  editTask ({commit, dispatch}, newTask) {
+    return fetch(`${API_URL}/tasks/${newTask.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${state.user.auth_token}`
+      },
+      body: JSON.stringify(newTask)
+    })
+    .then((response) => {
+      if (response.status >= 400) {
+        return Promise.reject(response)
+      }
+      return response.json()
+    }).then((json) => {
+      commit('setTasks', [json])
+    })
+  },
+
   login ({commit, dispatch}, {username, password}) {
     return fetch(`${API_URL}/auth`, {
       method: 'POST',

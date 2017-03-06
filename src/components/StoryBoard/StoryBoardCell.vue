@@ -1,17 +1,7 @@
 <template>
-  <div class="story-board">
-    <div class="story-board__header-row">
-      <div class="story-board__header-cell" :style="{width: columnWidth}">Story name</div>
-      <div class="story-board__header-cell" v-for="(status, statusId) in taskStatuses" :style="{width: columnWidth}">{{status.name}}</div>
-    </div>
-
-    <div class="story-board__row" v-for="story in stories">
-      <div class="story-board__column-header-cell" :style="{width: columnWidth}">{{ story.subject }}</div>
-      <div class="story-board__cell" v-for="(status, statusId) in taskStatuses" :style="{width: columnWidth}">
-        <div v-for="(task, taskId) in tasksForStatus(story.id, statusId)" :data-days-without-update="daysWithoutUpdateForTaskId(taskId)" class="story-board__task" :class="classNameForTaskId(taskId)">
-          {{task.subject}}
-        </div>
-      </div>
+  <div class="story-board__cell" v-on:dragover.prevent v-on:drop="onDragDrop">
+    <div draggable="true" v-for="(task, taskId) in tasks" v-on:dragstart="onDrag(taskId, $event)" :data-days-without-update="daysWithoutUpdateForTaskId(taskId)" class="story-board__task" :class="classNameForTaskId(taskId)">
+      {{task.subject}}
     </div>
   </div>
 </template>
@@ -19,22 +9,20 @@
 <script>
 export default {
   name: 'milestone',
-  props: ['stories', 'taskStatuses'],
-  computed: {
-    columnWidth () {
-      return `${100 / (Object.keys(this.taskStatuses).length + 1)}%`
-    }
-  },
+  props: ['tasks', 'statusId'],
   methods: {
-    tasksForStatus (storyId, statusId) {
-      const tasks = Object.keys(this.$store.state.tasks).reduce((agg, taskId) => {
-        const task = this.$store.state.tasks[taskId]
-        if (+task.user_story === +storyId && +task.status === +statusId) {
-          agg[task.id] = task
-        }
-        return agg
-      }, {})
-      return tasks
+    onDragDrop (event) {
+      const taskId = event.dataTransfer.getData('text/plain')
+      const originalTask = this.$store.state.tasks[taskId]
+      const newTask = {
+        ...originalTask,
+        status: this.statusId
+      }
+      this.$store.commit('setTasks', [newTask])
+      this.$store.dispatch('editTask', newTask)
+    },
+    onDrag (taskId, event) {
+      event.dataTransfer.setData('text/plain', taskId)
     },
     daysWithoutUpdateForTaskId (taskId) {
       const task = this.$store.state.tasks[taskId]
@@ -57,24 +45,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="stylus">
-  .story-board {
-    margin-bottom: 20px;
-  }
-
-  .story-board__header-row, .story-board__row {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-  }
-
-  .story-board__header-cell, .story-board__column-header-cell, .story-board__cell {
-    flex: 0 1 auto;
-    align-self: auto;
-    box-sizing: border-box;
-    border: 1px solid #EEEEEE;
-    padding: 20px 10px;
-  }
-  
   .story-board__task {
     background: #EEEEEE;
     padding: 5px;
