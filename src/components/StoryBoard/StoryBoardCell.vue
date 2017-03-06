@@ -1,5 +1,5 @@
 <template>
-  <div class="story-board__cell" v-on:dragover.prevent v-on:drop="onDragDrop">
+  <div class="story-board__cell" v-on:dragover.prevent v-on:drop="onDragDrop(statusId, $event)">
     <div draggable="true" v-for="(task, taskId) in tasks" v-on:dragstart="onDrag(taskId, $event)" :data-days-without-update="daysWithoutUpdateForTaskId(taskId)" class="story-board__task" :class="classNameForTaskId(taskId)">
       {{task.subject}}
     </div>
@@ -11,12 +11,12 @@ export default {
   name: 'milestone',
   props: ['tasks', 'statusId'],
   methods: {
-    onDragDrop (event) {
+    onDragDrop (statusId, event) {
       const taskId = event.dataTransfer.getData('text/plain')
       const originalTask = this.$store.state.tasks[taskId]
       const newTask = {
         ...originalTask,
-        status: this.statusId
+        status: statusId
       }
       this.$store.commit('setTasks', [newTask])
       this.$store.dispatch('editTask', newTask)
