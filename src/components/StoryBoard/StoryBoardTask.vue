@@ -1,30 +1,33 @@
 <template>
-  <div class="story-board__cell" v-on:dragover.prevent v-on:drop="onDragDrop(statusId, $event)">
-    <story-board-task draggable="true" v-for="(task, taskId) in tasks" :key="taskId" :task="task" v-on:dragstart="onDrag(taskId, $event)" />
+  <div :data-days-without-update="daysWithoutUpdate" class="story-board__task" :class="className">
+    <div class="story-board__task__assignee" v-if="task.assigned_to" :style="{backgroundColor: assignee.color}">{{ assignee.initials }}</div>
+    <div class="story-board__task__description">
+      {{task.subject}}
+    </div>
   </div>
 </template>
 
 <script>
-import StoryBoardTask from '@/components/StoryBoard/StoryBoardTask'
 export default {
-  name: 'story-board-cell',
-  props: ['tasks', 'statusId'],
-  components: {
-    StoryBoardTask
-  },
-  methods: {
-    onDragDrop (statusId, event) {
-      const taskId = event.dataTransfer.getData('text/plain')
-      const originalTask = this.$store.state.tasks[taskId]
-      const newTask = {
-        ...originalTask,
-        status: statusId
-      }
-      this.$store.commit('setTasks', [newTask])
-      this.$store.dispatch('editTask', newTask)
+  name: 'story-board-task',
+  props: ['task'],
+  computed: {
+    assignee () {
+      return this.$store.state.users[this.task.assigned_to]
     },
-    onDrag (taskId, event) {
-      event.dataTransfer.setData('text/plain', taskId)
+    daysWithoutUpdate () {
+      const task = this.task
+      const lastModifiedDate = new Date(task.modified_date)
+      const todayDate = new Date()
+      const timeDiff = Math.abs(todayDate.getTime() - lastModifiedDate.getTime())
+      const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)) - 1
+      return diffDays
+    },
+    className () {
+      return {
+        'story-board__task--no-update-warning': this.daysWithoutUpdate === 1,
+        'story-board__task--no-update-error': this.daysWithoutUpdate > 1
+      }
     }
   }
 }

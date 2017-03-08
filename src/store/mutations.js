@@ -33,6 +33,12 @@ export const mutations = {
       agg[status.id] = status
       return agg
     }, {...state.taskStatuses})
+  },
+  setUsers (state, users) {
+    state.users = users.reduce((agg, user) => {
+      agg[user.id] = user
+      return agg
+    }, {...state.users})
   }
 }
 
@@ -50,6 +56,9 @@ export const actions = {
         })
         .then(() => {
           return dispatch('getTaskStatuses')
+        })
+        .then(() => {
+          return dispatch('getUsers')
         })
   },
 
@@ -145,6 +154,34 @@ export const actions = {
     return Promise.all(promises)
   },
 
+  getUsers ({commit, state}) {
+    const promises = Object.keys(state.projects).map((projectId) => {
+      return fetch(`${API_URL}/users?project=${projectId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${state.user.auth_token}`
+        }
+      }).then((response) => {
+        if (response.status >= 400) {
+          return Promise.reject(response)
+        }
+        return response.json()
+      }).then((json) => {
+        return json.map((user) => {
+          const splittedName = user.full_name.split(' ')
+          const firstName = splittedName[0]
+          const lastName = splittedName[splittedName.length - 1]
+          const initials = `${firstName[0]}${lastName[0]}`.toUpperCase()
+
+          return {...user, initials}
+        })
+      }).then((users) => {
+        commit('setUsers', users)
+      })
+    })
+    return Promise.all(promises)
+  },
+
   editTask ({commit, dispatch}, newTask) {
     return fetch(`${API_URL}/tasks/${newTask.id}`, {
       method: 'PATCH',
@@ -197,5 +234,6 @@ export const state = {
   milestones: {},
   storyStatuses: {},
   taskStatuses: {},
-  tasks: {}
+  tasks: {},
+  users: {}
 }
