@@ -1,7 +1,7 @@
 <template>
   <div class="story-board__row">
     <div class="story-board__column-header-cell" :style="{width: columnWidth}">{{ story.subject }}</div>
-    <story-board-cell v-for="(status, statusId) in taskStatuses" :key="statusId" :style="{width: columnWidth}" :tasks="tasksForStatus(story.id, statusId)" :status-id="statusId" />
+    <story-board-cell v-for="status in taskStatuses" :key="status.order" :style="{width: columnWidth}" :tasks="tasksForStatus(story.id, status.id)" :status-id="status.id" />
   </div>
 </template>
 

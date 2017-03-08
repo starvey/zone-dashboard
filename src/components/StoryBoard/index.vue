@@ -2,10 +2,10 @@
   <div class="story-board">
     <div class="story-board__header-row">
       <div class="story-board__header-cell" :style="{width: columnWidth}">Story name</div>
-      <div class="story-board__header-cell" v-for="(status, statusId) in taskStatuses" :style="{width: columnWidth}">{{status.name}}</div>
+      <div class="story-board__header-cell" v-for="status in taskStatusesArray" :style="{width: columnWidth}">{{status.name}}</div>
     </div>
 
-    <story-board-row v-for="story in stories" :key="story.id" :story="story" :task-statuses="taskStatuses" />
+    <story-board-row v-for="story in stories" :key="story.id" :story="story" :task-statuses="taskStatusesArray" />
   </div>
 </template>
 
@@ -18,6 +18,9 @@ export default {
     StoryBoardRow
   },
   computed: {
+    taskStatusesArray () {
+      return Object.keys(this.taskStatuses).map(k => this.taskStatuses[k]).sort((a, b) => a.order - b.order)
+    },
     columnWidth () {
       return `${100 / (Object.keys(this.taskStatuses).length + 1)}%`
     }
