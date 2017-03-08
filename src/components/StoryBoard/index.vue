@@ -94,7 +94,7 @@ export default {
   }
   .story-board__header-row {
     z-index: 2;
-    transition: transform 0.2s linear;
+    transition: transform 0.1s linear;
     position: relative;
     &:before {
       content: '';
