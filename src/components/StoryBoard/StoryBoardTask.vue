@@ -1,6 +1,6 @@
 <template>
-  <div :data-days-without-update="daysWithoutUpdate" class="story-board__task" :class="className">
-    <div class="story-board__task__assignee" v-if="task.assigned_to" :style="{backgroundColor: assignee.color}">{{ assignee.initials }}</div>
+  <div :data-days-without-update="daysWithoutUpdate" class="story-board__task" :class="className" draggable="true" v-on:dragstart="onDrag(task.id, $event)">
+    <div class="story-board__task__assignee" :style="{backgroundColor: assignee.color}">{{ assignee.initials }}</div>
     <div class="story-board__task__description">
       {{task.subject}}
     </div>
@@ -13,7 +13,10 @@ export default {
   props: ['task'],
   computed: {
     assignee () {
-      return this.$store.state.users[this.task.assigned_to]
+      return this.$store.state.users[this.task.assigned_to] || {
+        color: '#CCCCCC',
+        initials: '?'
+      }
     },
     daysWithoutUpdate () {
       const task = this.task
@@ -28,6 +31,11 @@ export default {
         'story-board__task--no-update-warning': this.daysWithoutUpdate === 1,
         'story-board__task--no-update-error': this.daysWithoutUpdate > 1
       }
+    }
+  },
+  methods: {
+    onDrag (taskId, event) {
+      event.dataTransfer.setData('text/plain', taskId)
     }
   }
 }
@@ -51,9 +59,11 @@ export default {
       align-self: center;
       text-align: center;
       background: white;
-      padding: 10px;
+      padding: 10px 0;
       margin-right: 10px;
       border-radius: 50%;
+      min-width: 40px;
+      box-sizing: border-box;
     }
 
     .story-board__task__description {

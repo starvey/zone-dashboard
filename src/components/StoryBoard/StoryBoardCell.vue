@@ -1,6 +1,6 @@
 <template>
   <div class="story-board__cell" v-on:dragover.prevent v-on:drop="onDragDrop(statusId, $event)">
-    <story-board-task draggable="true" v-for="(task, taskId) in tasks" :key="taskId" :task="task" v-on:dragstart="onDrag(taskId, $event)" />
+    <story-board-task v-for="(task, taskId) in tasks" :key="taskId" :task="task" />
   </div>
 </template>
 
@@ -22,9 +22,6 @@ export default {
       }
       this.$store.commit('setTasks', [newTask])
       this.$store.dispatch('editTask', newTask)
-    },
-    onDrag (taskId, event) {
-      event.dataTransfer.setData('text/plain', taskId)
     }
   }
 }
